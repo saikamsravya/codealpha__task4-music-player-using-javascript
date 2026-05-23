@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Player</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+/* BODY */
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    padding:40px 0;
+}
+/* PLAYER */
+.player{
+    width:400px;
+    max-width:90%;
+    padding:30px;
+    border-radius:25px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    text-align:center;
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+/* IMAGE */
+.player img{
+    width:180px;
+    height:180px;
+    border-radius:20px;
+    object-fit:cover;
+    margin-bottom:20px;
+    box-shadow:0 0 20px #38bdf8;
+    animation:rotate 8s linear infinite;
+    animation-play-state:paused;
+}
+/* IMAGE ROTATION */
+.playing{
+    animation-play-state:running !important;
+}
+@keyframes rotate{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}
+/* TITLE */
+h2{
+    margin-bottom:10px;
+    font-size:32px;
+}
+p{
+    color:#cbd5e1;
+    margin-bottom:20px;
+}
+/* PROGRESS BAR */
+#progress{
+    width:100%;
+    cursor:pointer;
+}
+/* TIME */
+.time{
+    display:flex;
+    justify-content:space-between;
+    margin-top:8px;
+    color:#cbd5e1;
+}
+/* BUTTONS */
+.controls{
+    margin-top:25px;
+}
+.controls button{
+    width:60px;
+    height:60px;
+    border:none;
+    border-radius:50%;
+    margin:10px;
+    background:#38bdf8;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.controls button:hover{
+    transform:scale(1.15);
+    background:#0284c7;
+}
+/* VOLUME */
+.volume{
+    margin-top:20px;
+}
+.volume input{
+    width:100%;
+}
+/* PLAYLIST */
+.playlist{
+    margin-top:25px;
+    text-align:left;
+}
+.playlist h3{
+    margin-bottom:15px;
+    color:#38bdf8;
+}
+.song{
+    background:#1e293b;
+    padding:15px;
+    margin:10px 0;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.song:hover{
+    background:#38bdf8;
+}
+.active{
+    background:#38bdf8;
+}
+</style>
+</head>
+<body>
+<div class="player">
+    <!-- IMAGE -->
+    <img src="https://picsum.photos/300/300"
+    id="songImage">
+    <!-- SONG TITLE -->
+    <h2 id="title">Relax Music 🎵</h2>
+    <p id="artist">Peaceful Vibes</p>
+    <!-- AUDIO -->
+    <audio id="audio"
+    src="song1.mp3"></audio>
+    <!-- PROGRESS BAR -->
+    <input type="range"
+    value="0"
+    id="progress">
+    <!-- TIME -->
+    <div class="time">
+        <span id="currentTime">0:00</span>
+        <span id="duration">0:00</span>
+    </div>
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button onclick="previousSong()">⏮</button>
+        <button onclick="playPause()"
+        id="playBtn">▶</button>
+        <button onclick="nextSong()">⏭</button>
+    </div>
+    <!-- VOLUME -->
+    <div class="volume">
+        <p>🔊 Volume</p>
+        <input type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        onchange="changeVolume(this.value)">
+    </div>
+    <!-- PLAYLIST -->
+    <div class="playlist">
+        <h3>Playlist</h3>
+        <div class="song active"
+        onclick="loadSong(0)">
+            Relax Music 🎵
+        </div>
+        <div class="song"
+        onclick="loadSong(1)">
+            Nature Sound 🌿
+        </div>
+        <div class="song"
+        onclick="loadSong(2)">
+            Chill Beat 🎧
+        </div>
+    </div>
+</div>
+<script>
+/* SONG LIST */
+let songs = [
+{
+    title:"Relax Music 🎵",
+    artist:"Peaceful Vibes",
+    src:"song1.mp3"
+},
+{
+    title:"Nature Sound 🌿",
+    artist:"Nature Audio",
+    src:"song1.mp3"
+},
+{
+    title:"Chill Beat 🎧",
+    artist:"DJ Mix",
+    src:"song1.mp3"
+}
+];
+/* ELEMENTS */
+let audio =
+document.getElementById("audio");
+let title =
+document.getElementById("title");
+let artist =
+document.getElementById("artist");
+let progress =
+document.getElementById("progress");
+let playBtn =
+document.getElementById("playBtn");
+let songImage =
+document.getElementById("songImage");
+let songItems =
+document.querySelectorAll(".song");
+/* CURRENT SONG */
+let currentSong = 0;
+/* LOAD SONG */
+function loadSong(index){
+    currentSong = index;
+    title.innerHTML =
+    songs[index].title;
+    artist.innerHTML =
+    songs[index].artist;
+    audio.src =
+    songs[index].src;
+    songItems.forEach(function(song){
+        song.classList.remove("active");
+    });
+    songItems[index].classList.add("active");
+    audio.play();
+    playBtn.innerHTML = "⏸";
+    songImage.classList.add("playing");
+}
+/* PLAY & PAUSE */
+function playPause(){
+    if(audio.paused){
+        audio.play();
+        playBtn.innerHTML = "⏸";
+        songImage.classList.add("playing");
+    }
+    else{
+        audio.pause();
+        playBtn.innerHTML = "▶";
+        songImage.classList.remove("playing");
+    }
+}
+/* NEXT SONG */
+function nextSong(){
+    currentSong++;
+    if(currentSong >= songs.length){
+        currentSong = 0;
+    }
+    loadSong(currentSong);
+}
+/* PREVIOUS SONG */
+function previousSong(){
+    currentSong--;
+    if(currentSong < 0){
+        currentSong = songs.length - 1;
+    }
+    loadSong(currentSong);
+}
+/* AUTOPLAY */
+audio.addEventListener("ended",function(){
+    nextSong();
+});
+/* PROGRESS BAR */
+audio.addEventListener("timeupdate",function(){
+    progress.value =
+    (audio.currentTime / audio.duration) * 100;
+    let minutes =
+    Math.floor(audio.currentTime / 60);
+    let seconds =
+    Math.floor(audio.currentTime % 60);
+    if(seconds < 10){
+        seconds = "0" + seconds;
+    }
+    document.getElementById("currentTime").innerHTML =
+    minutes + ":" + seconds;
+    let totalMinutes =
+    Math.floor(audio.duration / 60);
+    let totalSeconds =
+    Math.floor(audio.duration % 60);
+    if(totalSeconds < 10){
+        totalSeconds = "0" + totalSeconds;
+    }
+    document.getElementById("duration").innerHTML =
+    totalMinutes + ":" + totalSeconds;
+});
+/* CHANGE SONG POSITION */
+progress.addEventListener("input",function(){
+    audio.currentTime =
+    (progress.value / 100) * audio.duration;
+});
+/* VOLUME */
+function changeVolume(value){
+    audio.volume = value;
+}
+</script>
+</body>
+</html>
